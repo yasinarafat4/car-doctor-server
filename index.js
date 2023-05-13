@@ -27,7 +27,9 @@ async function run() {
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
 
+    // collections
     const serviceCollection = client.db("carDoctor").collection("services");
+    const bookingCollection = client.db("carDoctor").collection("booking");
 
     app.get("/services", async (req, res) => {
       const cursor = serviceCollection.find();
@@ -35,7 +37,16 @@ async function run() {
       res.send(result);
     });
 
-    // update operation for service checkout
+    // update operation for service checkout and details
+    app.get("/services/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+
+      const result = await serviceCollection.findOne(query);
+      res.send(result);
+    });
+
+    // update operation for service checkout and details (Another way using options)
     // app.get("/services/:id", async (req, res) => {
     //   const id = req.params.id;
     //   const query = { _id: new ObjectId(id) };
@@ -48,12 +59,12 @@ async function run() {
     //   res.send(result);
     // });
 
-    // update operation for service details
-    app.get("/services/:id", async (req, res) => {
-      const id = req.params.id;
-      const query = { _id: new ObjectId(id) };
-
-      const result = await serviceCollection.findOne(query);
+    // Bookings
+    //create
+    app.post("/bookings", async (req, res) => {
+      const booking = req.body;
+      console.log(booking);
+      const result = await bookingCollection.insertOne(booking);
       res.send(result);
     });
 
